@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather App</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+
+  #weather-info {
+    margin-top: 50px;
+  }
+
+  #error-message {
+    color: red;
+  }
+</style>
+</head>
+<body>
+<h1>Weather App</h1>
+<input type="text" id="location" placeholder="Enter location">
+<button onclick="getWeather()">Get Weather</button>
+
+<div id="weather-info"></div>
+<div id="error-message"></div>
+
+<script>
+  function getWeather() {
+    const locationInput = document.getElementById('location').value;
+
+    if (locationInput.trim() === '') {
+      document.getElementById('error-message').innerText = 'Please enter a location';
+      document.getElementById('weather-info').innerText = '';
+      return;
+    }
+
+    const apiKey = 'YOUR_API_KEY'; // Replace with your OpenWeatherMap API key
+    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${locationInput}&appid=${apiKey}&units=metric`;
+
+    fetch(apiUrl)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch weather data');
+        }
+        return response.json();
+      })
+      .then(data => {
+        displayWeather(data);
+      })
+      .catch(error => {
+        document.getElementById('error-message').innerText = error.message;
+        document.getElementById('weather-info').innerText = '';
+      });
+  }
+
+  function displayWeather(data) {
+    const weatherInfoDiv = document.getElementById('weather-info');
+    weatherInfoDiv.innerHTML = '';
+
+    const cityName = document.createElement('h2');
+    cityName.textContent = data.name;
+    weatherInfoDiv.appendChild(cityName);
+
+    const temperature = document.createElement('p');
+    temperature.textContent = `Temperature: ${data.main.temp}°C`;
+    weatherInfoDiv.appendChild(temperature);
+
+    const weatherDescription = document.createElement('p');
+    weatherDescription.textContent = `Weather: ${data.weather[0].main}`;
+    weatherInfoDiv.appendChild(weatherDescription);
+
+    const humidity = document.createElement('p');
+    humidity.textContent = `Humidity: ${data.main.humidity}%`;
+    weatherInfoDiv.appendChild(humidity);
+
+    const windSpeed = document.createElement('p');
+    windSpeed.textContent = `Wind Speed: ${data.wind.speed} m/s`;
+    weatherInfoDiv.appendChild(windSpeed);
+  }
+</script>
+</body>
+</html>
